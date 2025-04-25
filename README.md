@@ -6,7 +6,7 @@ Dette repositoryet inneholder et PowerShell-skript/kommandoer for å utføre et 
 
 ## Forutsetninger
 
-* En maskin med Windows Server installert (f.eks. Windows Server 2019, 2022).
+* En maskin med Windows Server installert (Windows Server  2022).
 * Administratorrettigheter på serveren.
 * Kjennskap til nettverksadressene som skal brukes (IP, nettverksmaske, gateway, DNS).
 
