@@ -24,7 +24,7 @@ $gateway = "192.168.1.1"
 $dnsServers = "127.0.0.1" # Kan også være en liste, f.eks. @("127.0.0.1", "192.168.1.1")
 
 # --- Active Directory-innstillinger ---
-$domainName = "poland.local" # Fult kvalifisert domenenavn (FQDN). Bruk .local for interne testmiljøer eller et subdomene du eier.
+$domainName = "poland" # Fult kvalifisert domenenavn (FQDN). Bruk .local for interne testmiljøer eller et subdomene du eier.
 $netbiosName = "POLAND"      # NetBIOS-navn (vanligvis første del av $domainName, maks 15 tegn).
 # Du vil bli bedt om et SafeModeAdministratorPassword under AD-installasjonen.
 # Alternativt, definer det her (FJERN KOMMENTAREN og sett et STERKT passord):
