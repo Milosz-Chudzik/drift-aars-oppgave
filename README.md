@@ -70,21 +70,15 @@ Get-NetAdapter -Name $interfaceAlias | New-NetIPAddress -IPAddress $ipAddress -P
 
 ## Sett DNS-server(e) for nettverkskortet
 ```
-Write-Host "Setter DNS-server(e) til '$($dnsServers -join ', ')'..."
 Get-NetAdapter -Name $interfaceAlias | Set-DnsClientServerAddress -ServerAddresses $dnsServers
-
-Write-Host "Nettverkskonfigurasjon er satt. Verifiser med:" -ForegroundColor Yellow
-Write-Host "Get-NetIPConfiguration -InterfaceAlias '$interfaceAlias'" -ForegroundColor Cyan
 ```
 
 2. Installer Nødvendige Roller og Funksjoner
 ```
-Write-Host "Installerer Windows-funksjoner: $($windowsFeatures -join ', ')..."
 Install-WindowsFeature -Name $windowsFeatures -IncludeAllSubFeature -IncludeManagementTools
 ```
 
 ### Noen roller kan kreve omstart før konfigurasjon
-Write-Host "Rolleinstallasjon fullført. En omstart kan være nødvendig før AD DS konfigureres." -ForegroundColor Yellow
 ### Kjør hvis en omstart er nødvendig:
 ```
 Restart-Computer -Force
@@ -94,6 +88,7 @@ Restart-Computer -Force
 Denne kommandoen oppretter et nytt Active Directory-skog og konfigurerer serveren som den første domenekontrolleren. Den installerer og konfigurerer også DNS-rollen for det nye domenet.
 Write-Host "Starter promotering til domenekontroller for domenet '$domainName'..."
 # Sjekk om $safeModePassword er definert
+```
 $installADDSForestParams = @{
     DomainName = $domainName
     DomainNetbiosName = $netbiosName
@@ -107,20 +102,21 @@ $installADDSForestParams = @{
 if ($PSBoundParameters.ContainsKey('safeModePassword')) {
     $installADDSForestParams.Add("SafeModeAdministratorPassword", $safeModePassword)
 }
+```
 
 # Kjør installasjonen
+```
 Install-ADDSForest @installADDSForestParams
-
+```
 # Serveren vil automatisk starte på nytt etter at promoteringen er fullført.
-Write-Host "Active Directory Domain Services installasjon startet. Serveren vil starte på nytt automatisk." -ForegroundColor Green
-
 
 VIKTIG: Vent til serveren har startet på nytt. Logg deretter inn med domeneadministrator-kontoen ($netbiosName\Administrator eller Administrator@$domainName) med det passordet du bruker for den lokale administratorkontoen.
+
 4. (Valgfritt) Konfigurer DHCP-server
 Hvis du installerte DHCP-rollen ("DHCP" i $windowsFeatures), må du konfigurere den og autorisere den i Active Directory. Kjør disse kommandoene etter at serveren er promotert og har startet på nytt.
 # Sjekk om DHCP-rollen er installert før du fortsetter
+```
 if (Get-WindowsFeature -Name DHCP | Where-Object { $_.Installed }) {
-    Write-Host "Konfigurerer DHCP-server..."
 
     # Hent serverens FQDN (viktig for autorisasjon)
     $serverFQDN = (Get-ADDomainController -Discover -Service PrimaryDC).HostName
@@ -147,8 +143,8 @@ if (Get-WindowsFeature -Name DHCP | Where-Object { $_.Installed }) {
         Set-DhcpServerv4OptionValue -ScopeId $ipAddress -OptionId $dhcpOptions.Keys -Value $dhcpOptions.Values
     }
 
+
     # Start DHCP-tjenesten på nytt for å aktivere endringer
-    Write-Host "Restarter DHCP-tjenesten..."
     Restart-Service DhcpServer
 
     # Verifiser konfigurasjonen
@@ -158,7 +154,7 @@ if (Get-WindowsFeature -Name DHCP | Where-Object { $_.Installed }) {
 } else {
     Write-Host "DHCP-rollen er ikke installert. Hopper over DHCP-konfigurasjon." -ForegroundColor Yellow
 }
-
+```
 
 
 5. Opprett Grunnleggende Organisatoriske Enheter (OUer)
