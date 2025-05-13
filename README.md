@@ -2,18 +2,14 @@
 
 Dette repositoryet inneholder et PowerShell-skript/kommandoer for å utføre et grunnleggende oppsett av en Windows Server, inkludert nettverkskonfigurasjon, installasjon av nødvendige roller, opprettelse av et nytt Active Directory-skog, konfigurering av DHCP (valgfritt), og opprettelse av grunnleggende Organisatoriske Enheter (OUer) og en testbruker.
 
-**Advarsel:** Dette skriptet gjør betydelige endringer på serveren. Kjør det kun i et testmiljø eller på en server du har til hensikt å konfigurere som domenekontroller. Sørg for å forstå hver kommando før du kjører den.
+**Advarsel:** Dette skriptet gjør betydelige endringer på serveren. Kjør det kun i et testmiljø eller på en server du har til hensikt å konfigurere som domenekontroller. 
 
-## Forutsetninger
+## Hva du trenger
 
 * En maskin med Windows Server installert (Windows Server  2022).
 * Administratorrettigheter på serveren.
-* Kjennskap til nettverksadressene som skal brukes (IP, nettverksmaske, gateway, DNS).
 
 ## Konfigurasjonsvariabler
-
-Før du kjører kommandoene, bør du tilpasse følgende variabler i skriptet eller manuelt erstatte verdiene i kommandoene:
-
 ```powershell
 # --- Nettverksinnstillinger ---
 $interfaceAlias = "Ethernet" # Endre til navnet på ditt nettverkskort (bruk Get-NetAdapter for å finne navnet)
@@ -64,7 +60,7 @@ $testUserChangePasswordAtLogon = $false # Sett til $true for å tvinge passordby
 
 
 Fremgangsmåte
-Kjør følgende kommandoer i en PowerShell-konsoll som administrator. Det anbefales å kjøre dem trinnvis for å verifisere hvert steg.
+Kjør disse kommandoene i PowerShell som administrator. Det anbefales å kjøre dem trinnvis for å verifisere hvert steg.
 1. Konfigurer Statisk IP-adresse og DNS
 # Sett statisk IP-adresse, nettverksmaske og gateway
 Write-Host "Konfigurerer statisk IP-adresse for '$interfaceAlias'..."
