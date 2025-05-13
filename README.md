@@ -58,31 +58,37 @@ $testUserSamAccount = "test.bruker"
 $testUserPassword = ConvertTo-SecureString "P@ssw0rd123!" -AsPlainText -Force
 $testUserChangePasswordAtLogon = $false # Sett til $true for å tvinge passordbytte ved første pålogging
 
-
-Fremgangsmåte
+```
+# Fremgangsmåte
 Kjør disse kommandoene i PowerShell som administrator. Det anbefales å kjøre dem trinnvis for å verifisere hvert steg.
 1. Konfigurer Statisk IP-adresse og DNS
-# Sett statisk IP-adresse, nettverksmaske og gateway
+## Sett statisk IP-adresse, nettverksmaske og gateway
+```
 Write-Host "Konfigurerer statisk IP-adresse for '$interfaceAlias'..."
 Get-NetAdapter -Name $interfaceAlias | New-NetIPAddress -IPAddress $ipAddress -PrefixLength $prefixLength -DefaultGateway $gateway
+```
 
-# Sett DNS-server(e) for nettverkskortet
+## Sett DNS-server(e) for nettverkskortet
+```
 Write-Host "Setter DNS-server(e) til '$($dnsServers -join ', ')'..."
 Get-NetAdapter -Name $interfaceAlias | Set-DnsClientServerAddress -ServerAddresses $dnsServers
 
 Write-Host "Nettverkskonfigurasjon er satt. Verifiser med:" -ForegroundColor Yellow
 Write-Host "Get-NetIPConfiguration -InterfaceAlias '$interfaceAlias'" -ForegroundColor Cyan
-
+```
 
 2. Installer Nødvendige Roller og Funksjoner
+```
 Write-Host "Installerer Windows-funksjoner: $($windowsFeatures -join ', ')..."
 Install-WindowsFeature -Name $windowsFeatures -IncludeAllSubFeature -IncludeManagementTools
+```
 
-# Noen roller kan kreve omstart før konfigurasjon
+### Noen roller kan kreve omstart før konfigurasjon
 Write-Host "Rolleinstallasjon fullført. En omstart kan være nødvendig før AD DS konfigureres." -ForegroundColor Yellow
-# Uncomment og kjør hvis en omstart er nødvendig:
-# Restart-Computer -Force
-
+### Kjør hvis en omstart er nødvendig:
+```
+Restart-Computer -Force
+```
 
 3. Promoter til Domenekontroller (Nytt Skog)
 Denne kommandoen oppretter et nytt Active Directory-skog og konfigurerer serveren som den første domenekontrolleren. Den installerer og konfigurerer også DNS-rollen for det nye domenet.
@@ -219,15 +225,6 @@ if ($createdUser) {
     Write-Host "Kunne ikke verifisere opprettelsen av testbruker '$testUserName'." -ForegroundColor Red
 }
 
+```
 
-Videre Steg
-Dette er kun et grunnleggende oppsett. Vurder følgende videre steg:
-Konfigurer DNS Forwarders og Reverse Lookup Zones.
-Sett opp Group Policies (GPOer) for sikkerhet og konfigurasjon.
-Legg til flere domenekontrollere for redundans og lastbalansering.
-Konfigurer sikkerhetskopiering av Active Directory og serveren generelt.
-Implementer ytterligere sikkerhetstiltak (f.eks. LAPS, herding av serveren).
-Opprett nødvendige brukergrupper og tilordne rettigheter.
-Finjuster DHCP-opsjoner og reservasjoner.
-Konfigurer fil
 
