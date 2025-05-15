@@ -64,7 +64,6 @@ Kjør disse kommandoene i PowerShell som administrator. Det anbefales å kjøre 
 1. Konfigurer Statisk IP-adresse og DNS
 ## Sett statisk IP-adresse, nettverksmaske og gateway
 ```
-Write-Host "Konfigurerer statisk IP-adresse for '$interfaceAlias'..."
 Get-NetAdapter -Name $interfaceAlias | New-NetIPAddress -IPAddress $ipAddress -PrefixLength $prefixLength -DefaultGateway $gateway
 ```
 
@@ -86,7 +85,6 @@ Restart-Computer -Force
 
 3. Promoter til Domenekontroller (Nytt Skog)
 Denne kommandoen oppretter et nytt Active Directory-skog og konfigurerer serveren som den første domenekontrolleren. Den installerer og konfigurerer også DNS-rollen for det nye domenet.
-Write-Host "Starter promotering til domenekontroller for domenet '$domainName'..."
 # Sjekk om $safeModePassword er definert
 ```
 $installADDSForestParams = @{
@@ -161,29 +159,33 @@ if (Get-WindowsFeature -Name DHCP | Where-Object { $_.Installed }) {
 Opprett en struktur med OUer for å organisere objekter i Active Directory.
 Write-Host "Oppretter grunnleggende OU-struktur..."
 # Definer rot-stien for domenet
+```
 $domainPath = "DC=$($domainName.Replace('.',',DC='))"
+```
 
 # Opprett hoved-OUer
+```
 New-ADOrganizationalUnit -Name $ouComputersBase -Path $domainPath -Description "Organisatorisk enhet for datamaskiner"
 New-ADOrganizationalUnit -Name $ouUsersBase -Path $domainPath -Description "Organisatorisk enhet for brukere"
 New-ADOrganizationalUnit -Name $ouGroups -Path $domainPath -Description "Organisatorisk enhet for grupper"
 New-ADOrganizationalUnit -Name $ouServers -Path $domainPath -Description "Organisatorisk enhet for servere"
+```
 
 # Opprett under-OUer (eksempel)
+```
 $computerBasePath = "OU=$ouComputersBase,$domainPath"
 New-ADOrganizationalUnit -Name $ouITComputers -Path $computerBasePath -Description "OU for IT-avdelingens datamaskiner"
+```
 # Legg til flere OUer etter behov...
 
 # Verifiser at OUene er opprettet
-Write-Host "OU-struktur opprettet. Verifiser med:" -ForegroundColor Yellow
-Write-Host "Get-ADOrganizationalUnit -Filter * | Select-Object Name, DistinguishedName" -ForegroundColor Cyan
-
+```
+Get-ADOrganizationalUnit -Filter * | Select-Object Name, DistinguishedName -ForegroundColor Cyan
+```
 
 6. Omdiriger Standardcontainere
-Omdiriger standardplasseringen for nye datamaskin- og brukerobjekter til mer passende OUer. Dette forenkler administrasjon.
-Write-Host "Omdirigerer standardcontainere for nye datamaskiner og brukere..."
-
 # Omdiriger 'Computers'-containeren til en spesifikk OU (f.eks. IT-Maskiner)
+```
 $computerRedirectPath = "OU=$ouITComputers,OU=$ouComputersBase,$domainPath"
 Write-Host "Omdirigerer nye datamaskiner til: $computerRedirectPath"
 redircmp $computerRedirectPath
@@ -192,18 +194,18 @@ redircmp $computerRedirectPath
 $userRedirectPath = "OU=$ouUsersBase,$domainPath"
 Write-Host "Omdirigerer nye brukere til: $userRedirectPath"
 redirusr $userRedirectPath
-
-Write-Host "Standardcontainere er omdirigert." -ForegroundColor Green
+```
 
 
 7. Opprett en Testbruker
 Opprett en eksempelbruker i den definerte bruker-OUen.
-Write-Host "Oppretter testbruker '$testUserName'..."
 # Definer brukerens UPN (User Principal Name)
+```
 $testUserUPN = "$testUserSamAccount@$domainName"
 # Definer stien til bruker-OUen
 $userOUFullPath = "OU=$ouUsersBase,$domainPath"
-
+```
+```
 # Opprett brukeren
 New-ADUser -Name $testUserName `
     -SamAccountName $testUserSamAccount `
@@ -212,8 +214,10 @@ New-ADUser -Name $testUserName `
     -AccountPassword $testUserPassword `
     -Enabled $true `
     -ChangePasswordAtLogon:$testUserChangePasswordAtLogon
+```
 
 # Verifiser at brukeren er opprettet
+```
 $createdUser = Get-ADUser -Filter "SamAccountName -eq '$testUserSamAccount'"
 if ($createdUser) {
     Write-Host "Testbruker '$testUserName' opprettet i OU '$($createdUser.DistinguishedName)'." -ForegroundColor Green
