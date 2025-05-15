@@ -180,7 +180,7 @@ New-ADOrganizationalUnit -Name $ouITComputers -Path $computerBasePath -Descripti
 
 # Verifiser at OUene er opprettet
 ```
-Get-ADOrganizationalUnit -Filter * | Select-Object Name, DistinguishedName -ForegroundColor Cyan
+Get-ADOrganizationalUnit -Filter * | Select-Object Name, DistinguishedName 
 ```
 
 6. Omdiriger Standardcontainere
