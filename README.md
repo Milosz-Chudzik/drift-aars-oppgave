@@ -32,7 +32,6 @@ $windowsFeatures = @(
     "AD-Domain-Services",
     "DNS",
     "DHCP",
-    "Hyper-V",
     "FS-FileServer"
 )
 
