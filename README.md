@@ -169,7 +169,7 @@ Opprett en struktur med OUer for å organisere objekter i Active Directory.
 Write-Host "Oppretter grunnleggende OU-struktur..."
 # Definer rot-stien for domenet
 ```
-$domainPath = "DC=$($domainName.Replace('.',',DC='))"
+$domainPath = "DC=poland, DC=dm"
 ```
 
 # Opprett hoved-OUer
