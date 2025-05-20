@@ -101,7 +101,16 @@ if ($PSBoundParameters.ContainsKey('safeModePassword')) {
     $installADDSForestParams.Add("SafeModeAdministratorPassword", $safeModePassword)
 }
 ```
-
+# internett
+```
+$env:HostIP = (
+    Get-NetIPConfiguration |
+    Where-Object {
+        $_.IPv4DefaultGateway -ne $null -and
+        $_.NetAdapter.Status -ne "Disconnected"
+    }
+).IPv4Address.IPAddress
+```
 # Kjør installasjonen
 ```
 Install-ADDSForest @installADDSForestParams
