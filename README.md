@@ -77,9 +77,14 @@ Install-WindowsFeature -Name $windowsFeatures -IncludeAllSubFeature -IncludeMana
 ```
 
 ### Noen roller kan kreve omstart før konfigurasjon
-### Kjør hvis en omstart er nødvendig:
+### sjekker om en omstart er nødvendig:
 ```
-Restart-Computer -Force
+if ($installResult.RestartNeeded -eq 'Yes') {
+    Write-Host "A system reboot is required to complete the installation of Windows features."
+    Restart-Computer -Force
+} else {
+    Write-Host "No reboot is necessary after installing Windows features."
+}
 ```
 
 3. Promoter til Domenekontroller (Nytt Skog)
