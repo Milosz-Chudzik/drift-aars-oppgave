@@ -60,7 +60,11 @@ $testUserChangePasswordAtLogon = $false # Sett til $true for å tvinge passordby
 ```
 # Fremgangsmåte
 Kjør disse kommandoene i PowerShell som administrator. Det anbefales å kjøre dem trinnvis for å verifisere hvert steg.
-1. Konfigurer Statisk IP-adresse og DNS
+1. Bytte navn på maskinen
+```
+Rename-Computer -NewName "drift-aars-oppgave" -Force -PassThru
+```
+2. Konfigurer Statisk IP-adresse og DNS
 ## Sett statisk IP-adresse, nettverksmaske og gateway
 ```
 Get-NetAdapter -Name $interfaceAlias | New-NetIPAddress -IPAddress $ipAddress -PrefixLength $prefixLength -DefaultGateway $gateway
@@ -71,7 +75,7 @@ Get-NetAdapter -Name $interfaceAlias | New-NetIPAddress -IPAddress $ipAddress -P
 Get-NetAdapter -Name $interfaceAlias | Set-DnsClientServerAddress -ServerAddresses $dnsServers
 ```
 
-2. Installer Nødvendige Roller og Funksjoner
+3. Installer Nødvendige Roller og Funksjoner
 ```
 Install-WindowsFeature -Name $windowsFeatures -IncludeAllSubFeature -IncludeManagementTools
 ```
@@ -87,7 +91,7 @@ if ($installResult.RestartNeeded -eq 'Yes') {
 }
 ```
 
-3. Promoter til Domenekontroller (Nytt Skog)
+4. Promoter til Domenekontroller (Nytt Skog)
 Denne kommandoen oppretter et nytt Active Directory-skog og konfigurerer serveren som den første domenekontrolleren. Den installerer og konfigurerer også DNS-rollen for det nye domenet.
 # Sjekk om $safeModePassword er definert
 ```
@@ -123,7 +127,7 @@ Install-ADDSForest @installADDSForestParams
 
 VIKTIG: Vent til serveren har startet på nytt. Logg deretter inn med domeneadministrator-kontoen ($netbiosName\Administrator eller Administrator@$domainName) med det passordet du bruker for den lokale administratorkontoen.
 
-4. (Valgfritt) Konfigurer DHCP-server
+5. (Valgfritt) Konfigurer DHCP-server
 Hvis du installerte DHCP-rollen ("DHCP" i $windowsFeatures), må du konfigurere den og autorisere den i Active Directory. Kjør disse kommandoene etter at serveren er promotert og har startet på nytt.
 # Sjekk om DHCP-rollen er installert før du fortsetter
 ```
@@ -168,7 +172,7 @@ if (Get-WindowsFeature -Name DHCP | Where-Object { $_.Installed }) {
 ```
 
 
-5. Opprett Grunnleggende Organisatoriske Enheter (OUer)
+6. Opprett Grunnleggende Organisatoriske Enheter (OUer)
 Opprett en struktur med OUer for å organisere objekter i Active Directory.
 Write-Host "Oppretter grunnleggende OU-struktur..."
 # Definer rot-stien for domenet
@@ -196,7 +200,7 @@ New-ADOrganizationalUnit -Name $ouITComputers -Path $computerBasePath -Descripti
 Get-ADOrganizationalUnit -Filter * | Select-Object Name, DistinguishedName 
 ```
 
-6. Omdiriger Standardcontainere
+7. Omdiriger Standardcontainere
 # Omdiriger 'Computers'-containeren til en spesifikk OU (f.eks. IT-Maskiner)
 ```
 $computerRedirectPath = "OU=$ouITComputers,OU=$ouComputersBase,$domainPath"
@@ -210,7 +214,7 @@ redirusr $userRedirectPath
 ```
 
 
-7. Opprett en Testbruker
+8. Opprett en Testbruker
 Opprett en eksempelbruker i den definerte bruker-OUen.
 # Definer brukerens UPN (User Principal Name)
 ```
