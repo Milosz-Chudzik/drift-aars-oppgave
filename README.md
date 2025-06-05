@@ -30,7 +30,6 @@ Set-DnsClientServerAddress -InterfaceAlias $interfaceAlias -ServerAddresses $dns
 # installerer ad ds
 ```
 $domainName = "eksamen.dm"
-$netbiosName = "EKSAMEN"
 
 $windowsFeatures = @(
     "AD-Domain-Services"
