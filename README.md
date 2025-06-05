@@ -12,6 +12,7 @@ Dette repositoryet inneholder et PowerShell-skript/kommandoer for å utføre et 
 ```
 $newname = "eksamen"
 Rename-Computer -NewName $newname -Force -PassThru
+restart-computer -force
 ```
 # setter statisk ip
 ```
